@@ -102,10 +102,10 @@ int main(int argc, char** argv)
 	}*/
 
 	//Copying from host array to device array
-	cudaMemcpy(deviceq, q, N * sizeof(float), cudaMemcpyHostToDevice);
-	cudaMemcpy(devicex, x, N * sizeof(float), cudaMemcpyHostToDevice);
-	cudaMemcpy(devicey, y, N * sizeof(float), cudaMemcpyHostToDevice);
-	cudaMemcpy(devicez, z, N * sizeof(float), cudaMemcpyHostToDevice);        
+	cudaMemcpy(deviceq, q, N * sizeof(double), cudaMemcpyHostToDevice);
+	cudaMemcpy(devicex, x, N * sizeof(double), cudaMemcpyHostToDevice);
+	cudaMemcpy(devicey, y, N * sizeof(double), cudaMemcpyHostToDevice);
+	cudaMemcpy(devicez, z, N * sizeof(double), cudaMemcpyHostToDevice);        
 	
 	Fx=(double*)malloc((N)*sizeof(double));
 	Fy=(double*)malloc((N)*sizeof(double));
@@ -123,15 +123,15 @@ int main(int argc, char** argv)
 		Fz[i]=0;
 		U[i]=0;
 	}
-	//dim3 blockDim(N/2);
-	//dim3 gridDim(2);
+	dim3 blockDim(N/4);
+	dim3 gridDim(4);
 	// Calling the kernal
-        force<<<1,1000>>>(deviceq,devicex,devicey,devicez,deviceFx,deviceFy,deviceFz,deviceU,N);
+        force<<<gridDim,blockDim>>>(deviceq,devicex,devicey,devicez,deviceFx,deviceFy,deviceFz,deviceU,N);
 	
-	cudaMemcpy(Fx, deviceFx, N * sizeof(float), cudaMemcpyDeviceToHost);
-	cudaMemcpy(Fy, deviceFy, N * sizeof(float), cudaMemcpyDeviceToHost);
-	cudaMemcpy(Fz, deviceFz, N * sizeof(float), cudaMemcpyDeviceToHost);
-	cudaMemcpy(U,  deviceU, N * sizeof(float), cudaMemcpyDeviceToHost);
+	cudaMemcpy(Fx, deviceFx, N * sizeof(double), cudaMemcpyDeviceToHost);
+	cudaMemcpy(Fy, deviceFy, N * sizeof(double), cudaMemcpyDeviceToHost);
+	cudaMemcpy(Fz, deviceFz, N * sizeof(double), cudaMemcpyDeviceToHost);
+	cudaMemcpy(U,  deviceU, N * sizeof(double), cudaMemcpyDeviceToHost);
 
 	for(i=0;i<N;i++)
 	{	
